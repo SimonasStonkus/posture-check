@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSound } from "use-sound";
 
 export default function Home() {
-  const [interval, setIntervalState] = useState(0);
+  const [interval, setIntervalState] = useState(0.5);
   const [play] = useSound("/beep-07a.mp3", { volume: 0.1 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [intervalId, setIntervalId] = useState<number | undefined>(undefined);
