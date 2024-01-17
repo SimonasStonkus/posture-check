@@ -25,30 +25,35 @@ export default function Home() {
       // If the sound is currently paused, start playing it
       const id = window.setInterval(
         handlePlaySound,
-        interval * 60 * 60 * 1000
-      ) as unknown as number; // Convert interval from hours to milliseconds
+        interval * 60 * 60 * 1000 // Convert interval from hours to milliseconds
+      ) as unknown as number;
       setIntervalId(id);
       setIsPlaying(true);
     }
   };
 
-  const hourFormatter = (value: number) => {
-    if (value === 1) {
-      return "1 hour";
-    }
-    if (value % 1 === 0) {
-      return `${value} hours`;
-    } else if (value === 0.5) {
+  const timeStringFormatter = (value: number) => {
+    const minutes: number = value % 1;
+    const hours: number = value - minutes;
+    let formattedTime: string = "";
+
+    if (minutes === 0.5 && hours === 0) {
       return "30 minutes";
-    } else if (value === 1.5) {
-      return "1 hour and 30 minutes";
-    } else {
-      return `${value - 0.5} hours and 30 minutes`;
     }
+
+    formattedTime += `${hours} hour`;
+    if (hours !== 1) {
+      formattedTime += "s";
+    }
+    if (minutes !== 0) {
+      formattedTime += ` and 30 minutes`;
+    }
+
+    return formattedTime;
   };
 
   const marks = [
-    { value: 0.0, label: "0" },
+    { value: 0.5, label: "0.5 hr" },
     { value: 1, label: "1 hr" },
     { value: 2, label: "2 hrs" },
     { value: 3, label: "3 hrs" },
@@ -64,7 +69,7 @@ export default function Home() {
         <h2>Set your reminder interval</h2>
         <div className={"sliderContainer"}>
           <Slider
-            min={0}
+            min={0.5}
             max={6}
             step={0.5}
             size="lg"
@@ -73,11 +78,13 @@ export default function Home() {
           />
         </div>
         <div className="box">
-          <h2 style={{ height: "50px" }}>
-            Current Interval: {hourFormatter(interval)}
-          </h2>
-          <Button onClick={togglePlay}>{isPlaying ? "Pause" : "Play"}</Button>
-          <Button onClick={handlePlaySound}>Test sound</Button>
+          <h2>Current interval: {timeStringFormatter(interval)}</h2>
+          <Button onClick={togglePlay} color={isPlaying ? "red" : "blue"}>
+            {isPlaying ? "Pause" : "Play"}
+          </Button>
+          <div className="testSoundButtonContainer">
+            <Button onClick={handlePlaySound}>Test sound</Button>
+          </div>
         </div>
       </div>
     </>

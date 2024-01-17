@@ -1,3 +1,7 @@
+h2 {
+  margin-bottom: 20px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -16,10 +20,9 @@
   align-items: center;
   width: 600px;
   max-width: 80vw;
-  min-height: 200px;
-
-  gap: 50px;
-  padding: 25px;
+  gap: 0px;
+  padding: 15px;
+  flex-wrap: wrap;
 }
 
 .sliderContainer {
@@ -29,4 +32,11 @@
   width: 600px;
   max-width: 80vw;
   gap: 25px;
+}
+
+.testSoundButtonContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px;
 }
