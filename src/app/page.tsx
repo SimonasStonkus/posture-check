@@ -138,7 +138,7 @@ export default function Home() {
                 placeholder="Hex colour value"
                 onChange={setColour}
                 leftSection={false}
-              ></ColorInput>
+              />
 
               <Button
                 onClick={() => setColour("#2F4F4F")}
