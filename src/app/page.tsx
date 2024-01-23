@@ -1,6 +1,6 @@
 "use client";
-import { useDisclosure } from "@mantine/hooks";
-import { Button, Slider, ColorPicker, Modal } from "@mantine/core";
+import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { Button, Slider, ColorPicker, Modal, ColorInput } from "@mantine/core";
 import { useState, useEffect } from "react";
 import { useSound } from "use-sound";
 
@@ -9,8 +9,28 @@ export default function Home() {
   const [play] = useSound("/beep-07a.mp3", { volume: 0.1 });
   const [isPlaying, setIsPlaying] = useState(false);
   const [intervalId, setIntervalId] = useState<number | undefined>(undefined);
-  const [colour, setColour] = useState("rgba(47, 79, 79, 1)");
   const [openedColour, { open, close }] = useDisclosure(false);
+
+  const [colour, setColour] = useLocalStorage({
+    key: "colour",
+    defaultValue: "#2F4F4F",
+  });
+
+  function isColourBright(hexColor: string): boolean {
+    // Remove the hash from the hex color if it exists
+    hexColor = hexColor.replace("#", "");
+
+    // Convert the hex color to RGB
+    const r = parseInt(hexColor.substring(0, 2), 16);
+    const g = parseInt(hexColor.substring(2, 4), 16);
+    const b = parseInt(hexColor.substring(4, 6), 16);
+
+    // Calculate the brightness of the color
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+    // If the brightness is less than 128, the color is dark, otherwise it's bright
+    return brightness >= 128;
+  }
 
   const handlePlaySound = () => {
     play();
@@ -68,6 +88,10 @@ export default function Home() {
   return (
     <>
       <div className="container" style={{ backgroundColor: colour }}>
+        <div className="testSoundButtonContainer">
+          <Button onClick={handlePlaySound}>Test sound</Button>
+        </div>
+
         <div
           className="testSoundButtonContainer"
           style={{ right: "auto", left: "0" }}
@@ -78,45 +102,61 @@ export default function Home() {
             onClose={close}
             centered
             withCloseButton={false}
-            style={{
-              textAlign: "center",
-            }}
             size="auto"
+            style={{ textAlign: "center" }}
           >
-            <h3 style={{ marginTop: "5px" }}>Choose a background colour</h3>
-            <ColorPicker
-              format="rgba"
-              value={colour}
-              onChange={setColour}
-              swatches={[
-                "#2e2e2e",
-                "#868e96",
-                "#fa5252",
-                "#e64980",
-                "#be4bdb",
-                "#7950f2",
-                "#4c6ef5",
-                "#228be6",
-                "#15aabf",
-                "#12b886",
-                "#40c057",
-                "#82c91e",
-                "#fab005",
-                "#fd7e14",
-              ]}
-              size="xl"
-            />
+            <div>
+              <h3 style={{ marginTop: "5px" }}>Choose a background colour</h3>
 
-            <Button
-              onClick={() => setColour("rgba(47, 79, 79, 1)")}
-              style={{ marginTop: "5px" }}
-            >
-              Reset to default
-            </Button>
+              <ColorPicker
+                format="hex"
+                value={colour}
+                onChange={setColour}
+                swatches={[
+                  "#2e2e2e",
+                  "#868e96",
+                  "#fa5252",
+                  "#e64980",
+                  "#be4bdb",
+                  "#7950f2",
+                  "#4c6ef5",
+                  "#228be6",
+                  "#15aabf",
+                  "#12b886",
+                  "#40c057",
+                  "#82c91e",
+                  "#fab005",
+                  "#fd7e14",
+                ]}
+                size="xl"
+              />
+              <p>Or put in your own hex value below</p>
+              <ColorInput
+                value={colour}
+                withPicker={false}
+                withEyeDropper={false}
+                placeholder="Hex colour value"
+                onChange={setColour}
+                leftSection={false}
+              ></ColorInput>
+
+              <Button
+                onClick={() => setColour("#2F4F4F")}
+                style={{ marginTop: "15px" }}
+              >
+                Reset to default
+              </Button>
+            </div>
           </Modal>
         </div>
-        <h1>Reminder to sit straight and drink water</h1>
-        <h2>Set your reminder interval</h2>
+
+        <h1 style={{ color: isColourBright(colour) ? "black" : "white" }}>
+          Reminder to sit straight and drink water
+        </h1>
+        <h2 style={{ color: isColourBright(colour) ? "black" : "white" }}>
+          Set your reminder interval
+        </h2>
+
         <div className={"sliderContainer"}>
           <Slider
             min={0.5}
@@ -125,16 +165,19 @@ export default function Home() {
             size="lg"
             marks={marks}
             onChange={(e) => setIntervalState(e)}
+            styles={{
+              markLabel: { color: isColourBright(colour) ? "black" : "white" },
+            }}
           />
         </div>
+
         <div className="box">
-          <h2>Current interval: {timeStringFormatter(interval)}</h2>
+          <h2 style={{ color: isColourBright(colour) ? "black" : "white" }}>
+            Current interval: {timeStringFormatter(interval)}
+          </h2>
           <Button onClick={togglePlay} color={isPlaying ? "red" : "blue"}>
             {isPlaying ? "Pause" : "Play"}
           </Button>
-          <div className="testSoundButtonContainer">
-            <Button onClick={handlePlaySound}>Test sound</Button>
-          </div>
         </div>
       </div>
     </>
