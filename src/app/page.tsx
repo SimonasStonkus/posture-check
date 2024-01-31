@@ -1,15 +1,24 @@
 "use client";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
-import { Button, Slider, ColorPicker, Modal, ColorInput } from "@mantine/core";
-import { useState, useEffect } from "react";
+import {
+  Button,
+  Slider,
+  ColorPicker,
+  Modal,
+  ColorInput,
+  Collapse,
+} from "@mantine/core";
+import { useState } from "react";
 import { useSound } from "use-sound";
 
 export default function Home() {
+  const [volume, setVolume] = useState(0.1);
   const [interval, setIntervalState] = useState(0.5);
-  const [play] = useSound("/beep-07a.mp3", { volume: 0.1 });
+  const [play] = useSound("/beep-07a.mp3", { volume: volume });
   const [isPlaying, setIsPlaying] = useState(false);
   const [intervalId, setIntervalId] = useState<number | undefined>(undefined);
   const [openedColour, { open, close }] = useDisclosure(false);
+  const [openedVolumeCollapse, { toggle }] = useDisclosure(false);
 
   const [colour, setColour] = useLocalStorage({
     key: "colour",
@@ -178,6 +187,31 @@ export default function Home() {
           <Button onClick={togglePlay} color={isPlaying ? "red" : "blue"}>
             {isPlaying ? "Pause" : "Play"}
           </Button>
+        </div>
+
+        <div className="collapseContainer">
+          <Button onClick={toggle}>Set Volume</Button>
+
+          <Collapse in={openedVolumeCollapse}>
+            <h4 style={{ color: isColourBright(colour) ? "black" : "white" }}>
+              {" "}
+              Set your volume
+            </h4>
+            <Slider
+              value={volume}
+              min={0.1}
+              max={1}
+              step={0.1}
+              size="lg"
+              onChange={(e) => setVolume(e)}
+              styles={{
+                markLabel: {
+                  color: isColourBright(colour) ? "black" : "white",
+                },
+              }}
+            />
+            <Button onClick={(e) => setVolume(0.1)}> Reset to default</Button>
+          </Collapse>
         </div>
       </div>
     </>

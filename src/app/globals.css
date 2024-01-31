@@ -40,3 +40,10 @@ h2 {
   right: 0;
   padding: 5px;
 }
+
+.collapseContainer {
+  gap: 10px;
+  width: 300px;
+  max-width: 60vw;
+  padding-top: 25px;
+}
