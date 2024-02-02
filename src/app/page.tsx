@@ -1,15 +1,15 @@
 "use client";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
-import {
-  Button,
-  Slider,
-  ColorPicker,
-  Modal,
-  ColorInput,
-  Collapse,
-} from "@mantine/core";
+import { Button, Slider, ColorPicker, ColorInput, Drawer } from "@mantine/core";
 import { useState } from "react";
 import { useSound } from "use-sound";
+import {
+  IconChevronRight,
+  IconChevronLeft,
+  IconVolume,
+} from "@tabler/icons-react";
+import timeStringFormatter from "@/lib/timeFormatter/timeFormatter";
+import isColourBright from "@/lib/isColourBright/isColourBright";
 
 export default function Home() {
   const [volume, setVolume] = useState(0.1);
@@ -17,29 +17,13 @@ export default function Home() {
   const [play] = useSound("/beep-07a.mp3", { volume: volume });
   const [isPlaying, setIsPlaying] = useState(false);
   const [intervalId, setIntervalId] = useState<number | undefined>(undefined);
-  const [openedColour, { open, close }] = useDisclosure(false);
-  const [openedVolumeCollapse, { toggle }] = useDisclosure(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [contrastColour, setContrastColour] = useState("#000000");
 
   const [colour, setColour] = useLocalStorage({
     key: "colour",
     defaultValue: "#2F4F4F",
   });
-
-  function isColourBright(hexColor: string): boolean {
-    // Remove the hash from the hex color if it exists
-    hexColor = hexColor.replace("#", "");
-
-    // Convert the hex color to RGB
-    const r = parseInt(hexColor.substring(0, 2), 16);
-    const g = parseInt(hexColor.substring(2, 4), 16);
-    const b = parseInt(hexColor.substring(4, 6), 16);
-
-    // Calculate the brightness of the color
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-    // If the brightness is less than 128, the color is dark, otherwise it's bright
-    return brightness >= 128;
-  }
 
   const handlePlaySound = () => {
     play();
@@ -64,26 +48,6 @@ export default function Home() {
     }
   };
 
-  const timeStringFormatter = (value: number) => {
-    const minutes: number = value % 1;
-    const hours: number = value - minutes;
-    let formattedTime: string = "";
-
-    if (minutes === 0.5 && hours === 0) {
-      return "30 minutes";
-    }
-
-    formattedTime += `${hours} hour`;
-    if (hours !== 1) {
-      formattedTime += "s";
-    }
-    if (minutes !== 0) {
-      formattedTime += ` and 30 minutes`;
-    }
-
-    return formattedTime;
-  };
-
   const marks = [
     { value: 0.5, label: "0.5 hr" },
     { value: 1, label: "1 hr" },
@@ -97,74 +61,121 @@ export default function Home() {
   return (
     <>
       <div className="container" style={{ backgroundColor: colour }}>
-        <div className="testSoundButtonContainer">
-          <Button onClick={handlePlaySound}>Test sound</Button>
+        <div className="settingsContainer">
+          <IconChevronRight
+            onClick={open}
+            size={28}
+            style={{ color: contrastColour }}
+          />
         </div>
 
-        <div
-          className="testSoundButtonContainer"
-          style={{ right: "auto", left: "0" }}
+        <Drawer
+          opened={opened}
+          onClose={close}
+          withOverlay={false}
+          title="Settings"
+          closeButtonProps={{
+            icon: <IconChevronLeft color={contrastColour} />,
+          }}
+          styles={{
+            content: { backgroundColor: colour },
+            header: {
+              backgroundColor: colour,
+              color: contrastColour,
+            },
+          }}
         >
-          <Button onClick={open}>Background colour</Button>
-          <Modal
-            opened={openedColour}
-            onClose={close}
-            centered
-            withCloseButton={false}
-            size="auto"
-            style={{ textAlign: "center" }}
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
           >
-            <div>
-              <h3 style={{ marginTop: "5px" }}>Choose a background colour</h3>
+            <h3
+              style={{
+                marginTop: "5px",
+                color: contrastColour,
+              }}
+            >
+              Choose a background colour
+            </h3>
 
-              <ColorPicker
-                format="hex"
-                value={colour}
-                onChange={setColour}
-                swatches={[
-                  "#2e2e2e",
-                  "#868e96",
-                  "#fa5252",
-                  "#e64980",
-                  "#be4bdb",
-                  "#7950f2",
-                  "#4c6ef5",
-                  "#228be6",
-                  "#15aabf",
-                  "#12b886",
-                  "#40c057",
-                  "#82c91e",
-                  "#fab005",
-                  "#fd7e14",
-                ]}
-                size="xl"
-              />
-              <p>Or put in your own hex value below</p>
-              <ColorInput
-                value={colour}
-                withPicker={false}
-                withEyeDropper={false}
-                placeholder="Hex colour value"
-                onChange={setColour}
-                leftSection={false}
-              />
+            <ColorPicker
+              format="hex"
+              value={colour}
+              onChange={(newColour) => {
+                setColour(newColour);
+                setContrastColour(
+                  isColourBright(newColour) ? "black" : "white"
+                );
+              }}
+              swatches={[
+                "#2e2e2e",
+                "#868e96",
+                "#fa5252",
+                "#e64980",
+                "#be4bdb",
+                "#7950f2",
+                "#4c6ef5",
+                "#228be6",
+                "#15aabf",
+                "#12b886",
+                "#40c057",
+                "#82c91e",
+                "#fab005",
+                "#fd7e14",
+              ]}
+              size="xl"
+            />
+            <p style={{ color: contrastColour }}>
+              Or put in your own hex value below
+            </p>
 
-              <Button
-                onClick={() => setColour("#2F4F4F")}
-                style={{ marginTop: "15px" }}
-              >
-                Reset to default
-              </Button>
-            </div>
-          </Modal>
-        </div>
+            <ColorInput
+              value={colour}
+              withPicker={false}
+              withEyeDropper={false}
+              placeholder="Hex colour value"
+              onChange={setColour}
+              leftSection={false}
+            />
 
-        <h1 style={{ color: isColourBright(colour) ? "black" : "white" }}>
+            <Button
+              onClick={() => {
+                setColour("#2F4F4F");
+                setContrastColour(
+                  isColourBright("#2F4F4F") ? "black" : "white"
+                );
+              }}
+              style={{ marginTop: "15px" }}
+            >
+              Reset colour
+            </Button>
+
+            <h4 style={{ color: contrastColour }}> Volume: {volume * 100}%</h4>
+
+            <Slider
+              value={volume}
+              min={0.1}
+              max={1}
+              step={0.1}
+              size="lg"
+              onChange={(e) => setVolume(e)}
+              thumbChildren={<IconVolume size="2rem" />}
+              thumbSize={26}
+              label={null}
+              styles={{
+                markLabel: {
+                  color: contrastColour,
+                },
+                thumb: { borderWidth: 2, padding: 3 },
+              }}
+              onChangeEnd={handlePlaySound}
+            />
+          </div>
+        </Drawer>
+
+        <h1 style={{ color: contrastColour }}>
           Reminder to sit straight and drink water
         </h1>
-        <h2 style={{ color: isColourBright(colour) ? "black" : "white" }}>
-          Set your reminder interval
-        </h2>
+        <h2 style={{ color: contrastColour }}>Set your reminder interval</h2>
 
         <div className={"sliderContainer"}>
           <Slider
@@ -175,43 +186,18 @@ export default function Home() {
             marks={marks}
             onChange={(e) => setIntervalState(e)}
             styles={{
-              markLabel: { color: isColourBright(colour) ? "black" : "white" },
+              markLabel: { color: contrastColour },
             }}
           />
         </div>
 
         <div className="box">
-          <h2 style={{ color: isColourBright(colour) ? "black" : "white" }}>
+          <h2 style={{ color: contrastColour }}>
             Current interval: {timeStringFormatter(interval)}
           </h2>
           <Button onClick={togglePlay} color={isPlaying ? "red" : "blue"}>
             {isPlaying ? "Pause" : "Play"}
           </Button>
-        </div>
-
-        <div className="collapseContainer">
-          <Button onClick={toggle}>Set Volume</Button>
-
-          <Collapse in={openedVolumeCollapse}>
-            <h4 style={{ color: isColourBright(colour) ? "black" : "white" }}>
-              {" "}
-              Set your volume
-            </h4>
-            <Slider
-              value={volume}
-              min={0.1}
-              max={1}
-              step={0.1}
-              size="lg"
-              onChange={(e) => setVolume(e)}
-              styles={{
-                markLabel: {
-                  color: isColourBright(colour) ? "black" : "white",
-                },
-              }}
-            />
-            <Button onClick={(e) => setVolume(0.1)}> Reset to default</Button>
-          </Collapse>
         </div>
       </div>
     </>

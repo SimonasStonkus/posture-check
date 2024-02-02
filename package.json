@@ -1,6 +1,6 @@
 {
   "name": "posture-check",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,7 @@
   "dependencies": {
     "@mantine/core": "^7.4.1",
     "@mantine/hooks": "^7.4.1",
+    "@tabler/icons-react": "^2.46.0",
     "@vercel/analytics": "^1.1.1",
     "next": "14.0.4",
     "react": "^18",
