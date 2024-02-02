@@ -170,6 +170,12 @@ export default function Home() {
               onChangeEnd={handlePlaySound}
             />
           </div>
+          <div style={{ position: "absolute", bottom: "0", left: "0" }}>
+            Favicon by{" "}
+            <a target="_blank" href="https://icons8.com">
+              Icons8
+            </a>
+          </div>
         </Drawer>
 
         <h1 style={{ color: contrastColour }}>

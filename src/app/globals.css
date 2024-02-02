@@ -2,6 +2,10 @@ h2 {
   margin-bottom: 20px;
 }
 
+a {
+  color: inherit;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -41,13 +45,6 @@ h2 {
   margin: 5px;
   height: 28px;
   width: 28px;
-}
-
-.collapseContainer {
-  gap: 10px;
-  width: 300px;
-  max-width: 60vw;
-  padding-top: 25px;
 }
 
 .settingsContainer:hover {
