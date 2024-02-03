@@ -8,8 +8,8 @@ import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Posture/Hydration check",
-  description: "Because posture and hydration are important",
+  title: "Posture and Hydration reminder",
+  description: "Because good posture and staying hydrated is important",
 };
 
 export default function RootLayout({
