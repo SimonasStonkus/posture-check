@@ -18,11 +18,15 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [intervalId, setIntervalId] = useState<number | undefined>(undefined);
   const [opened, { open, close }] = useDisclosure(false);
-  const [contrastColour, setContrastColour] = useState("#000000");
 
   const [colour, setColour] = useLocalStorage({
     key: "colour",
     defaultValue: "#2F4F4F",
+  });
+
+  const [contrastColour, setContrastColour] = useLocalStorage({
+    key: "contrastColour",
+    defaultValue: isColourBright(colour) ? "black" : "white",
   });
 
   const handlePlaySound = () => {
@@ -86,7 +90,12 @@ export default function Home() {
           }}
         >
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "15px",
+              minHeight: "92dvh",
+            }}
           >
             <h3
               style={{
@@ -169,12 +178,19 @@ export default function Home() {
               }}
               onChangeEnd={handlePlaySound}
             />
-          </div>
-          <div style={{ position: "absolute", bottom: "0", left: "0" }}>
-            Favicon by{" "}
-            <a target="_blank" href="https://icons8.com">
-              Icons8
-            </a>
+            <div
+              style={{
+                marginTop: "auto",
+                bottom: "0",
+                color: contrastColour,
+                paddingBottom: "5px",
+              }}
+            >
+              Favicon by{" "}
+              <a target="_blank" href="https://icons8.com">
+                Icons8
+              </a>
+            </div>
           </div>
         </Drawer>
 
